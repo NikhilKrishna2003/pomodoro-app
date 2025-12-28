@@ -5,6 +5,10 @@ import TodoDrawer from "./TodoDrawer";
 import SettingsModal from "./SettingsModal";
 import Toast from "./Toast";
 import { ListTodo, Settings } from "lucide-react";
+import { auth, db } from "./firebase";
+
+console.log(auth, db);
+
 
 const MODES = {
   focus: { label: "Focus", minutes: 25 },
