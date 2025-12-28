@@ -8,6 +8,7 @@ import TodoDrawer from "./TodoDrawer";
 import SettingsModal from "./SettingsModal";
 import Toast from "./Toast";
 import { ListTodo, Settings } from "lucide-react";
+import { TaskProvider } from "../context/TaskContext";
 
 const MODES = {
   focus: { label: "Focus", minutes: 25 },
@@ -29,169 +30,140 @@ export default function Pomodoro({ user }) {
   const [toast, setToast] = useState("");
 
   const [theme, setTheme] = useState("dark");
-
-  // 🔊 SOUND
   const [soundEnabled, setSoundEnabled] = useState(true);
   const audioRef = useRef(null);
-
   const completedRef = useRef(false);
 
-  /* ---------- INIT AUDIO ---------- */
   useEffect(() => {
     audioRef.current = new Audio("/sounds/notify.mp3");
   }, []);
 
-  /* ---------- THEME ---------- */
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  /* ---------- INIT STATS ---------- */
   useEffect(() => {
     if (!user) return;
-
-    const ref = doc(db, "users", user.uid, "stats", "summary");
-    setDoc(ref, { pomodoros: 0, focusMinutes: 0 }, { merge: true });
+    setDoc(doc(db, "users", user.uid, "stats", "summary"),
+      { pomodoros: 0, focusMinutes: 0 },
+      { merge: true }
+    );
   }, [user]);
 
-  /* ---------- MODE CHANGE ---------- */
   useEffect(() => {
     setTimeLeft(
-      mode === "focus"
-        ? focusMinutes * 60
-        : MODES[mode].minutes * 60
+      mode === "focus" ? focusMinutes * 60 : MODES[mode].minutes * 60
     );
     setRunning(false);
   }, [mode, focusMinutes]);
 
-  /* ---------- TIMER ---------- */
   useEffect(() => {
     if (!running) return;
 
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
+    const i = setInterval(() => {
+      setTimeLeft((t) => {
+        if (t <= 1) {
           if (completedRef.current) return 0;
           completedRef.current = true;
 
           setRunning(false);
 
-          // 🔔 PLAY SOUND
-          if (soundEnabled && audioRef.current) {
-            audioRef.current.currentTime = 0;
-            audioRef.current.play().catch(() => {});
-          }
+          if (soundEnabled) audioRef.current?.play().catch(() => {});
 
           if (mode === "focus") {
-            setPomodoros((p) => p + 1);
-            setFocusTime((t) => t + focusMinutes);
+            setPomodoros(p => p + 1);
+            setFocusTime(t => t + focusMinutes);
 
-            updateDoc(
-              doc(db, "users", user.uid, "stats", "summary"),
-              {
-                pomodoros: increment(1),
-                focusMinutes: increment(focusMinutes),
-              }
-            );
+            updateDoc(doc(db, "users", user.uid, "stats", "summary"), {
+              pomodoros: increment(1),
+              focusMinutes: increment(focusMinutes),
+            });
 
-            setToast("✅ Focus session completed");
+            setToast("✅ Focus completed");
             setMode("short");
           } else {
-            setToast("☕ Break completed");
+            setToast("☕ Break done");
             setMode("focus");
           }
 
-          setTimeout(() => {
-            completedRef.current = false;
-          }, 1000);
-
+          setTimeout(() => (completedRef.current = false), 500);
           return 0;
         }
-        return prev - 1;
+        return t - 1;
       });
     }, 1000);
 
-    return () => clearInterval(interval);
-  }, [running, mode, focusMinutes, user, soundEnabled]);
+    return () => clearInterval(i);
+  }, [running, mode, focusMinutes, soundEnabled, user]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
   return (
-    <div className="pomodoro-container">
-      <div className="pomodoro-card">
-        {/* HEADER */}
-        <div className="pomodoro-header">
-          <div className="mode-switch">
-            {Object.keys(MODES).map((key) => (
-              <button
-                key={key}
-                className={`mode-btn ${mode === key ? "active" : ""}`}
-                onClick={() => setMode(key)}
-              >
-                {MODES[key].label}
+    <TaskProvider user={user}>
+      <div className="pomodoro-container">
+        <div className="pomodoro-card">
+          <div className="pomodoro-header">
+            <div className="mode-switch">
+              {Object.keys(MODES).map((k) => (
+                <button
+                  key={k}
+                  className={`mode-btn ${mode === k ? "active" : ""}`}
+                  onClick={() => setMode(k)}
+                >
+                  {MODES[k].label}
+                </button>
+              ))}
+            </div>
+
+            <div className="header-actions">
+              <button className="icon-btn" onClick={() => setOpenTodos(true)}>
+                <ListTodo size={20} />
               </button>
-            ))}
+              <button className="icon-btn" onClick={() => setOpenSettings(true)}>
+                <Settings size={20} />
+              </button>
+            </div>
           </div>
 
-          <div className="header-actions">
-            <button className="icon-btn" onClick={() => setOpenTodos(true)}>
-              <ListTodo size={20} />
+          <div className="timer-text">
+            {minutes}:{seconds.toString().padStart(2, "0")}
+          </div>
+
+          <div className="button-group">
+            <button className="btn btn-primary" onClick={() => setRunning(!running)}>
+              {running ? "Pause" : "Start"}
             </button>
-            <button className="icon-btn" onClick={() => setOpenSettings(true)}>
-              <Settings size={20} />
+            <button
+              className="btn btn-secondary"
+              onClick={() =>
+                setTimeLeft(
+                  mode === "focus"
+                    ? focusMinutes * 60
+                    : MODES[mode].minutes * 60
+                )
+              }
+            >
+              Reset
             </button>
           </div>
+
+          <Stats pomodoros={pomodoros} focusMinutes={focusTime} />
         </div>
 
-        {/* TIMER */}
-        <div className="timer-text">
-          {minutes}:{seconds.toString().padStart(2, "0")}
-        </div>
-
-        {/* CONTROLS */}
-        <div className="button-group">
-          <button
-            className="btn btn-primary"
-            onClick={() => setRunning(!running)}
-          >
-            {running ? "Pause" : "Start"}
-          </button>
-          <button
-            className="btn btn-secondary"
-            onClick={() =>
-              setTimeLeft(
-                mode === "focus"
-                  ? focusMinutes * 60
-                  : MODES[mode].minutes * 60
-              )
-            }
-          >
-            Reset
-          </button>
-        </div>
-
-        <Stats pomodoros={pomodoros} focusMinutes={focusTime} />
+        <TodoDrawer open={openTodos} onClose={() => setOpenTodos(false)} />
+        <SettingsModal
+          isOpen={openSettings}
+          onClose={() => setOpenSettings(false)}
+          focusMinutes={focusMinutes}
+          setFocusMinutes={setFocusMinutes}
+          theme={theme}
+          setTheme={setTheme}
+          soundEnabled={soundEnabled}
+          setSoundEnabled={setSoundEnabled}
+        />
+        <Toast show={!!toast} message={toast} onClose={() => setToast("")} />
       </div>
-
-      <TodoDrawer
-        open={openTodos}
-        onClose={() => setOpenTodos(false)}
-        user={user}
-      />
-
-      <SettingsModal
-        isOpen={openSettings}
-        onClose={() => setOpenSettings(false)}
-        focusMinutes={focusMinutes}
-        setFocusMinutes={setFocusMinutes}
-        theme={theme}
-        setTheme={setTheme}
-        soundEnabled={soundEnabled}
-        setSoundEnabled={setSoundEnabled}
-      />
-
-      <Toast show={!!toast} message={toast} onClose={() => setToast("")} />
-    </div>
+    </TaskProvider>
   );
 }
