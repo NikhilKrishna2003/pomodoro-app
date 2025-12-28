@@ -8,6 +8,8 @@ export default function SettingsModal({
   setFocusMinutes,
   theme,
   setTheme,
+  soundEnabled,
+  setSoundEnabled,
 }) {
   if (!isOpen) return null;
 
@@ -25,7 +27,7 @@ export default function SettingsModal({
         </div>
 
         <div className="settings-content">
-          {/* Focus duration */}
+          {/* Focus Duration */}
           <div className="settings-item">
             <label>Focus duration</label>
             <div className="settings-input">
@@ -58,9 +60,27 @@ export default function SettingsModal({
               </button>
             </div>
           </div>
+
+          {/* 🔊 SOUND */}
+          <div className="settings-item">
+            <label>Notification Sound</label>
+            <div className="theme-toggle-pill">
+              <button
+                className={`theme-btn ${soundEnabled ? "active" : ""}`}
+                onClick={() => setSoundEnabled(true)}
+              >
+                🔊 On
+              </button>
+              <button
+                className={`theme-btn ${!soundEnabled ? "active" : ""}`}
+                onClick={() => setSoundEnabled(false)}
+              >
+                🔇 Off
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* LOGOUT */}
         <button
           onClick={handleLogout}
           style={{

@@ -29,27 +29,29 @@ export default function Pomodoro({ user }) {
   const [toast, setToast] = useState("");
 
   const [theme, setTheme] = useState("dark");
+
+  // 🔊 SOUND
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const audioRef = useRef(null);
+
   const completedRef = useRef(false);
+
+  /* ---------- INIT AUDIO ---------- */
+  useEffect(() => {
+    audioRef.current = new Audio("/sounds/notify.mp3");
+  }, []);
 
   /* ---------- THEME ---------- */
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
-  /* ---------- INIT STATS (Firestore) ---------- */
+  /* ---------- INIT STATS ---------- */
   useEffect(() => {
     if (!user) return;
 
     const ref = doc(db, "users", user.uid, "stats", "summary");
-
-    setDoc(
-      ref,
-      {
-        pomodoros: 0,
-        focusMinutes: 0,
-      },
-      { merge: true }
-    );
+    setDoc(ref, { pomodoros: 0, focusMinutes: 0 }, { merge: true });
   }, [user]);
 
   /* ---------- MODE CHANGE ---------- */
@@ -73,6 +75,12 @@ export default function Pomodoro({ user }) {
           completedRef.current = true;
 
           setRunning(false);
+
+          // 🔔 PLAY SOUND
+          if (soundEnabled && audioRef.current) {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(() => {});
+          }
 
           if (mode === "focus") {
             setPomodoros((p) => p + 1);
@@ -104,7 +112,7 @@ export default function Pomodoro({ user }) {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [running, mode, focusMinutes, user]);
+  }, [running, mode, focusMinutes, user, soundEnabled]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -149,7 +157,6 @@ export default function Pomodoro({ user }) {
           >
             {running ? "Pause" : "Start"}
           </button>
-
           <button
             className="btn btn-secondary"
             onClick={() =>
@@ -167,7 +174,6 @@ export default function Pomodoro({ user }) {
         <Stats pomodoros={pomodoros} focusMinutes={focusTime} />
       </div>
 
-      {/* DRAWERS / MODALS */}
       <TodoDrawer
         open={openTodos}
         onClose={() => setOpenTodos(false)}
@@ -181,13 +187,11 @@ export default function Pomodoro({ user }) {
         setFocusMinutes={setFocusMinutes}
         theme={theme}
         setTheme={setTheme}
+        soundEnabled={soundEnabled}
+        setSoundEnabled={setSoundEnabled}
       />
 
-      <Toast
-        show={!!toast}
-        message={toast}
-        onClose={() => setToast("")}
-      />
+      <Toast show={!!toast} message={toast} onClose={() => setToast("")} />
     </div>
   );
 }
