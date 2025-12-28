@@ -9,16 +9,18 @@ export default function Login() {
   return (
     <div
       style={{
+        bgcolor: "black",
         minHeight: "100vh",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "column",
-        gap: "16px",
+        gap: "6px",
       }}
     >
-      <h1>Pomodoro Focus</h1>
-      <p>Sign in to continue</p>
+      <h1>NikHub</h1>
+      <h2>Personal Productive Hub</h2>
+      <p>Sign in to below continue</p>
 
       <button className="btn btn-primary" onClick={login}>
         Sign in with Google
