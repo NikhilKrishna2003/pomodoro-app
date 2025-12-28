@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
+import { doc, setDoc, updateDoc, increment } from "firebase/firestore";
+import { db } from "../firebase";
+
 import "./Pomodoro.css";
 import Stats from "./Stats";
 import TodoDrawer from "./TodoDrawer";
 import SettingsModal from "./SettingsModal";
 import Toast from "./Toast";
 import { ListTodo, Settings } from "lucide-react";
-import { auth, db, googleProvider } from "../firebase";
-
-console.log(auth, db);
-
 
 const MODES = {
   focus: { label: "Focus", minutes: 25 },
@@ -16,7 +15,7 @@ const MODES = {
   long: { label: "Long Break", minutes: 15 },
 };
 
-export default function Pomodoro() {
+export default function Pomodoro({ user }) {
   const [mode, setMode] = useState("focus");
   const [running, setRunning] = useState(false);
   const [focusMinutes, setFocusMinutes] = useState(25);
@@ -36,6 +35,22 @@ export default function Pomodoro() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  /* ---------- INIT STATS (Firestore) ---------- */
+  useEffect(() => {
+    if (!user) return;
+
+    const ref = doc(db, "users", user.uid, "stats", "summary");
+
+    setDoc(
+      ref,
+      {
+        pomodoros: 0,
+        focusMinutes: 0,
+      },
+      { merge: true }
+    );
+  }, [user]);
 
   /* ---------- MODE CHANGE ---------- */
   useEffect(() => {
@@ -62,6 +77,15 @@ export default function Pomodoro() {
           if (mode === "focus") {
             setPomodoros((p) => p + 1);
             setFocusTime((t) => t + focusMinutes);
+
+            updateDoc(
+              doc(db, "users", user.uid, "stats", "summary"),
+              {
+                pomodoros: increment(1),
+                focusMinutes: increment(focusMinutes),
+              }
+            );
+
             setToast("✅ Focus session completed");
             setMode("short");
           } else {
@@ -80,7 +104,7 @@ export default function Pomodoro() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [running, mode, focusMinutes]);
+  }, [running, mode, focusMinutes, user]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -119,9 +143,13 @@ export default function Pomodoro() {
 
         {/* CONTROLS */}
         <div className="button-group">
-          <button className="btn btn-primary" onClick={() => setRunning(!running)}>
+          <button
+            className="btn btn-primary"
+            onClick={() => setRunning(!running)}
+          >
             {running ? "Pause" : "Start"}
           </button>
+
           <button
             className="btn btn-secondary"
             onClick={() =>
@@ -140,7 +168,11 @@ export default function Pomodoro() {
       </div>
 
       {/* DRAWERS / MODALS */}
-      <TodoDrawer open={openTodos} onClose={() => setOpenTodos(false)} />
+      <TodoDrawer
+        open={openTodos}
+        onClose={() => setOpenTodos(false)}
+        user={user}
+      />
 
       <SettingsModal
         isOpen={openSettings}
@@ -151,7 +183,11 @@ export default function Pomodoro() {
         setTheme={setTheme}
       />
 
-      <Toast show={!!toast} message={toast} onClose={() => setToast("")} />
+      <Toast
+        show={!!toast}
+        message={toast}
+        onClose={() => setToast("")}
+      />
     </div>
   );
 }

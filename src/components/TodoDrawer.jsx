@@ -1,16 +1,62 @@
 import { useEffect, useState } from "react";
-import "./TodoDrawer.css";
-import { Pencil, Trash2 } from "lucide-react";
+import {
+  collection,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  onSnapshot,
+  query,
+  orderBy,
+} from "firebase/firestore";
+import { db } from "../firebase";
 
-export default function TodoDrawer({ open, onClose }) {
-  const [tasks, setTasks] = useState(
-    JSON.parse(localStorage.getItem("tasks")) || []
-  );
+export default function TodoDrawer({ user, open, onClose }) {
+  const [todos, setTodos] = useState([]);
   const [input, setInput] = useState("");
 
   useEffect(() => {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }, [tasks]);
+    if (!user || !open) return;
+
+    const q = query(
+      collection(db, "users", user.uid, "todos"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      setTodos(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+      );
+    });
+
+    return unsubscribe;
+  }, [user, open]);
+
+  const addTodo = async () => {
+    if (!input.trim() || !user) return;
+
+    await addDoc(collection(db, "users", user.uid, "todos"), {
+      text: input,
+      completed: false,
+      createdAt: Date.now(),
+    });
+
+    setInput("");
+  };
+
+  const toggleTodo = async (id, completed) => {
+    await updateDoc(
+      doc(db, "users", user.uid, "todos", id),
+      { completed: !completed }
+    );
+  };
+
+  const deleteTodo = async (id) => {
+    await deleteDoc(doc(db, "users", user.uid, "todos", id));
+  };
 
   if (!open) return null;
 
@@ -18,58 +64,46 @@ export default function TodoDrawer({ open, onClose }) {
     <div className="drawer-overlay" onClick={onClose}>
       <div className="todo-drawer" onClick={(e) => e.stopPropagation()}>
         <div className="drawer-header">
-          <h3>Tasks</h3>
+          <h3>Todos</h3>
           <button onClick={onClose}>✕</button>
         </div>
 
-        <div className="todo-add">
-          <input
-            placeholder="Add a task"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button
-            onClick={() => {
-              if (!input.trim()) return;
-              setTasks([...tasks, { id: Date.now(), title: input.trim() }]);
-              setInput("");
-            }}
-          >
-            Add
-          </button>
-        </div>
+        {!user && <p>Please login to use todos</p>}
 
-        <ul className="todo-list">
-          {tasks.map((task) => (
-            <li key={task.id} className="todo-item">
-              <span className="todo-title-text">{task.title}</span>
+        {user && (
+          <>
+            <div className="todo-add">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Add a task"
+              />
+              <button onClick={addTodo}>Add</button>
+            </div>
 
-              <div className="todo-actions">
-                <button
-                  onClick={() => {
-                    const updated = prompt("Edit task", task.title);
-                    if (!updated) return;
-                    setTasks(
-                      tasks.map((t) =>
-                        t.id === task.id ? { ...t, title: updated } : t
-                      )
-                    );
+            <ul className="todo-list">
+              {todos.map((todo) => (
+                <li key={todo.id} className="todo-item">
+                <span
+                  className="todo-title-text"
+                  onClick={() => toggleTodo(todo.id, todo.completed)}
+                  style={{
+                    textDecoration: todo.completed ? "line-through" : "none",
+                    cursor: "pointer",
                   }}
                 >
-                  <Pencil size={16} />
-                </button>
+                  {todo.text}
+                </span>
 
-                <button
-                  onClick={() =>
-                    setTasks(tasks.filter((t) => t.id !== task.id))
-                  }
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  <div className="todo-actions">
+                    <button onClick={() => deleteTodo(todo.id)}>🗑</button>
+                  </div>
+                </li>
+
+              ))}
+            </ul>
+          </>
+        )}
       </div>
     </div>
   );
