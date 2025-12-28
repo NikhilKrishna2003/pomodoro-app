@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./TodoDrawer.css";
-import { Trash2, Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 
 export default function TodoDrawer({ open, onClose }) {
   const [tasks, setTasks] = useState(
@@ -31,7 +31,7 @@ export default function TodoDrawer({ open, onClose }) {
           <button
             onClick={() => {
               if (!input.trim()) return;
-              setTasks([...tasks, { id: Date.now(), title: input }]);
+              setTasks([...tasks, { id: Date.now(), title: input.trim() }]);
               setInput("");
             }}
           >
@@ -41,22 +41,24 @@ export default function TodoDrawer({ open, onClose }) {
 
         <ul className="todo-list">
           {tasks.map((task) => (
-            <li className="todo-item" key={task.id}>
+            <li key={task.id} className="todo-item">
               <span className="todo-title-text">{task.title}</span>
+
               <div className="todo-actions">
                 <button
-                  onClick={() =>
+                  onClick={() => {
+                    const updated = prompt("Edit task", task.title);
+                    if (!updated) return;
                     setTasks(
                       tasks.map((t) =>
-                        t.id === task.id
-                          ? { ...t, title: prompt("Edit task", t.title) }
-                          : t
+                        t.id === task.id ? { ...t, title: updated } : t
                       )
-                    )
-                  }
+                    );
+                  }}
                 >
                   <Pencil size={16} />
                 </button>
+
                 <button
                   onClick={() =>
                     setTasks(tasks.filter((t) => t.id !== task.id))

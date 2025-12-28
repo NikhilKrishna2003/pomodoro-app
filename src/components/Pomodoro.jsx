@@ -25,8 +25,15 @@ export default function Pomodoro() {
   const [focusTime, setFocusTime] = useState(0);
   const [toast, setToast] = useState("");
 
+  const [theme, setTheme] = useState("dark");
   const completedRef = useRef(false);
 
+  /* ---------- THEME ---------- */
+  useEffect(() => {
+    document.documentElement.setAttribute("data-theme", theme);
+  }, [theme]);
+
+  /* ---------- MODE CHANGE ---------- */
   useEffect(() => {
     setTimeLeft(
       mode === "focus"
@@ -36,6 +43,7 @@ export default function Pomodoro() {
     setRunning(false);
   }, [mode, focusMinutes]);
 
+  /* ---------- TIMER ---------- */
   useEffect(() => {
     if (!running) return;
 
@@ -76,6 +84,7 @@ export default function Pomodoro() {
   return (
     <div className="pomodoro-container">
       <div className="pomodoro-card">
+        {/* HEADER */}
         <div className="pomodoro-header">
           <div className="mode-switch">
             {Object.keys(MODES).map((key) => (
@@ -99,10 +108,12 @@ export default function Pomodoro() {
           </div>
         </div>
 
+        {/* TIMER */}
         <div className="timer-text">
           {minutes}:{seconds.toString().padStart(2, "0")}
         </div>
 
+        {/* CONTROLS */}
         <div className="button-group">
           <button className="btn btn-primary" onClick={() => setRunning(!running)}>
             {running ? "Pause" : "Start"}
@@ -124,13 +135,18 @@ export default function Pomodoro() {
         <Stats pomodoros={pomodoros} focusMinutes={focusTime} />
       </div>
 
+      {/* DRAWERS / MODALS */}
       <TodoDrawer open={openTodos} onClose={() => setOpenTodos(false)} />
+
       <SettingsModal
         isOpen={openSettings}
         onClose={() => setOpenSettings(false)}
         focusMinutes={focusMinutes}
         setFocusMinutes={setFocusMinutes}
+        theme={theme}
+        setTheme={setTheme}
       />
+
       <Toast show={!!toast} message={toast} onClose={() => setToast("")} />
     </div>
   );
