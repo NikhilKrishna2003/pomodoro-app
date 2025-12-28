@@ -1,0 +1,52 @@
+.drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 1000;
+  }
+  
+  .todo-drawer {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 360px;
+    background: var(--card-bg);
+    padding: 20px;
+  }
+  
+  .drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .todo-add {
+    display: flex;
+    gap: 6px;
+    margin: 12px 0;
+  }
+  
+  .todo-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+  }
+  
+  .todo-row.done {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  
+  .todo-actions {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .reminder {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+  

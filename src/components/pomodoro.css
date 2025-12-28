@@ -1,0 +1,477 @@
+:root {
+    --bg-gradient: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+    --card-bg: #ffffff;
+    --text-primary: #020617;
+    --text-secondary: #475569;
+  
+    --btn-primary-bg: #2563eb;
+    --btn-primary-text: #ffffff;
+  
+    --btn-secondary-bg: #e5e7eb;
+    --btn-secondary-text: #020617;
+  
+    --control-bg: #e5e7eb;
+  }
+  
+  [data-theme="dark"] {
+    --bg-gradient: radial-gradient(circle at top, #111827, #020617);
+    --card-bg: #0f172a;
+    --text-primary: #e5e7eb;
+    --text-secondary: #94a3b8;
+  
+    --btn-primary-bg: #22c55e;
+    --btn-primary-text: #020617;
+  
+    --btn-secondary-bg: #1e293b;
+    --btn-secondary-text: #e5e7eb;
+  
+    --control-bg: #020617;
+  }
+  .pomodoro-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  .pomodoro-card {
+    position: relative;
+    width: 420px;
+    padding: 28px;
+    border-radius: 24px;
+    background: var(--card-bg);
+  }
+  
+  /* HEADER */
+  .pomodoro-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  
+  /* MODE SWITCH */
+  .mode-switch {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .mode-btn {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: var(--btn-secondary-bg);
+    color: var(--text-secondary);
+  }
+  
+  .mode-btn.active {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+  }
+  
+  /* HEADER ACTIONS */
+  .header-actions {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .icon-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: var(--btn-secondary-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* TIMER */
+  .timer-text {
+    font-size: 64px;
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  /* ACTIVE TASK */
+  .active-task {
+    text-align: center;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  /* CONTROLS */
+  .button-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  
+  .pomodoro-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-gradient);
+    font-family: Inter, sans-serif;
+    color: var(--text-primary);
+  }
+  
+  .pomodoro-card {
+    position: relative;
+    background: var(--card-bg);
+    padding: 48px 64px;
+    border-radius: 28px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    width: 420px;
+    text-align: center;
+  }
+  
+  .theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+  
+  .timer-text {
+    font-size: 96px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  
+  .active-task {
+    margin-bottom: 12px;
+    opacity: 0.85;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  
+  .btn {
+    border: none;
+    padding: 14px 36px;
+    font-size: 18px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  
+  .btn-primary {
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+  }
+  
+  .btn-secondary {
+    background: var(--btn-secondary-bg);
+    color: var(--btn-secondary-text);
+  }
+  
+  .time-controls {
+    position: absolute;
+    right: -72px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .time-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--control-bg);
+    color: var(--text-primary);
+    border: none;
+    cursor: pointer;
+  }
+  
+  .todo-container {
+    margin-top: 32px;
+    text-align: left;
+  }
+  
+  .todo-title {
+    margin-bottom: 8px;
+  }
+  
+  .todo-input {
+    display: flex;
+    gap: 8px;
+  }
+  
+  .todo-input input {
+    flex: 1;
+    padding: 8px;
+  }
+  
+  .todo-list {
+    margin-top: 12px;
+    list-style: none;
+    padding: 0;
+  }
+  
+  .todo-list li {
+    padding: 6px 0;
+    cursor: pointer;
+  }
+  
+  .todo-list li.done {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+ /* Settings button */
+.settings-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-secondary);
+  }
+  
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  .modal {
+    background: var(--card-bg);
+    color: var(--text-primary);
+    padding: 32px;
+    border-radius: 20px;
+    width: 320px;
+  }
+  
+  .modal h2 {
+    margin-bottom: 20px;
+  }
+  
+  .setting-item {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+  }
+  
+  .setting-item label {
+    margin-bottom: 6px;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+  
+  .setting-item input,
+  .setting-item select {
+    padding: 8px;
+    border-radius: 8px;
+    border: none;
+  }
+  
+  .close-btn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-text);
+  }
+  
+  /* Mode Switch */
+.mode-switch {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.mode-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  background: var(--btn-secondary-bg);
+  color: var(--text-secondary);
+}
+
+.mode-btn.active {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+}
+
+/* Todo UI */
+.todo-card {
+  margin-top: 28px;
+  padding: 16px;
+  border-radius: 16px;
+  background: var(--btn-secondary-bg);
+}
+
+.todo-title {
+  margin-bottom: 10px;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+.todo-input {
+  display: flex;
+  gap: 8px;
+}
+
+.todo-input input {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+}
+
+.todo-input button {
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.todo-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.todo-item {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.todo-item.done {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+/* ---------- TOP ACTIONS (TASKS + SETTINGS) ---------- */
+
+.top-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px;
+  border-radius: 999px;
+  backdrop-filter: blur(8px);
+}
+
+[data-theme="light"] .top-actions {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.top-btn {
+  padding: 6px 14px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.top-btn:hover {
+  background: var(--btn-secondary-bg);
+  color: var(--text-primary);
+}
+
+.top-btn:active {
+  transform: scale(0.96);
+}
+
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.todo-drawer {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 360px;
+  background: var(--card-bg);
+  padding: 20px;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+}
+
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.drawer-header button {
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.todo-add {
+  display: flex;
+  gap: 6px;
+  margin: 12px 0;
+}
+
+.todo-add input {
+  flex: 1;
+  padding: 6px;
+}
+
+.todo-add button {
+  padding: 0 12px;
+}
+
+.todo-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.todo-row.done {
+  opacity: 0.6;
+  text-decoration: line-through;
+}
+
+.todo-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.reminder {
+  font-size: 11px;
+  opacity: 0.7;
+}
