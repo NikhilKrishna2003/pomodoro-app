@@ -52,8 +52,7 @@
   
   /* MODE SWITCH */
   .mode-switch {
-    display: flex;
-    gap: 8px;
+    flex-wrap: wrap;
   }
   
   .mode-btn {
@@ -474,4 +473,42 @@
 .reminder {
   font-size: 11px;
   opacity: 0.7;
+}
+/* ---------- MOBILE RESPONSIVE ---------- */
+@media (max-width: 768px) {
+  .pomodoro-container {
+    padding: 12px;
+    align-items: flex-start;
+  }
+
+  .pomodoro-card {
+    width: 100%;
+    padding: 24px 20px;
+    border-radius: 20px;
+    box-shadow: none;
+  }
+
+  .timer-text {
+    font-size: 56px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+  }
+
+  .pomodoro-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .header-actions {
+    justify-content: center;
+  }
 }
