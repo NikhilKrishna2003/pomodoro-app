@@ -1,5 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { collection, doc, onSnapshot, setDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  onSnapshot,
+  addDoc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { db } from "../firebase";
 
 const TaskContext = createContext();
@@ -7,7 +14,7 @@ const TaskContext = createContext();
 export function TaskProvider({ user, children }) {
   const [tasks, setTasks] = useState([]);
 
-  // 🔹 Firestore sync
+  // 🔹 Firestore sync (READ)
   useEffect(() => {
     if (!user) {
       setTasks([]);
@@ -16,30 +23,35 @@ export function TaskProvider({ user, children }) {
 
     const ref = collection(db, "users", user.uid, "tasks");
     const unsub = onSnapshot(ref, (snap) => {
-      setTasks(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      setTasks(
+        snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }))
+      );
     });
 
     return unsub;
   }, [user]);
 
+  // 🔹 ADD (FIXED)
   const addTask = async (title) => {
     if (!user || !title.trim()) return;
 
-    const task = {
-      title,
-      status: "pending",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-
-    await setDoc(
-      doc(collection(db, "users", user.uid, "tasks")),
-      task
+    await addDoc(
+      collection(db, "users", user.uid, "tasks"),
+      {
+        title,
+        status: "pending",
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      }
     );
   };
 
+  // 🔹 UPDATE
   const updateTask = async (id, updates) => {
-    if (!user) return;
+    if (!user || !id) return;
 
     await setDoc(
       doc(db, "users", user.uid, "tasks", id),
@@ -48,8 +60,9 @@ export function TaskProvider({ user, children }) {
     );
   };
 
+  // 🔹 DELETE
   const deleteTask = async (id) => {
-    if (!user) return;
+    if (!user || !id) return;
     await deleteDoc(doc(db, "users", user.uid, "tasks", id));
   };
 
