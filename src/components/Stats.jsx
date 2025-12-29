@@ -1,18 +1,15 @@
-import "./Stats.css";
-
-function Stats({ pomodoros, focusMinutes }) {
+export default function Stats({ pomodoros, focusMinutes }) {
   return (
-    <div className="stats-container">
-      <div className="stat-card">
-        <span className="stat-value">{pomodoros}</span>
-        <span className="stat-label">Pomodoros</span>
+    <div className="stats">
+      <div className="stat-box">
+        <div className="stat-value">{pomodoros}</div>
+        <div className="stat-label">Pomodoros</div>
       </div>
-      <div className="stat-card">
-        <span className="stat-value">{focusMinutes}</span>
-        <span className="stat-label">Minutes Focused</span>
+
+      <div className="stat-box">
+        <div className="stat-value">{focusMinutes}</div>
+        <div className="stat-label">Minutes Focused</div>
       </div>
     </div>
   );
 }
-
-export default Stats;

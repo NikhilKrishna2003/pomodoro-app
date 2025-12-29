@@ -10,69 +10,103 @@ import {
 import { db } from "../firebase";
 
 const TaskContext = createContext();
+const LOCAL_KEY = "nikhub_tasks";
 
 export function TaskProvider({ user, children }) {
   const [tasks, setTasks] = useState([]);
+  const [focusedTaskId, setFocusedTaskId] = useState(null);
 
-  // 🔹 Firestore sync (READ)
+  // LOAD TASKS
   useEffect(() => {
     if (!user) {
-      setTasks([]);
+      const local = localStorage.getItem(LOCAL_KEY);
+      setTasks(local ? JSON.parse(local) : []);
       return;
     }
 
     const ref = collection(db, "users", user.uid, "tasks");
     const unsub = onSnapshot(ref, (snap) => {
-      setTasks(
-        snap.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        }))
-      );
+      setTasks(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
 
     return unsub;
   }, [user]);
 
-  // 🔹 ADD (FIXED)
-  const addTask = async (title) => {
-    if (!user || !title.trim()) return;
+  // SAVE LOCAL (guest)
+  useEffect(() => {
+    if (!user) {
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(tasks));
+    }
+  }, [tasks, user]);
 
-    await addDoc(
-      collection(db, "users", user.uid, "tasks"),
-      {
-        title,
-        status: "pending",
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      }
-    );
+  // ADD
+  const addTask = async (title) => {
+    const clean = title.trim();
+    if (!clean) return;
+
+    const payload = {
+      title: clean,
+      status: "pending",
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+    };
+
+    if (!user) {
+      setTasks((t) => [{ id: crypto.randomUUID(), ...payload }, ...t]);
+      return;
+    }
+
+    await addDoc(collection(db, "users", user.uid, "tasks"), payload);
   };
 
-  // 🔹 UPDATE
+  // UPDATE
   const updateTask = async (id, updates) => {
-    if (!user || !id) return;
+    const payload = { ...updates, updatedAt: Date.now() };
+
+    if (!user) {
+      setTasks((t) =>
+        t.map((x) => (x.id === id ? { ...x, ...payload } : x))
+      );
+      return;
+    }
 
     await setDoc(
       doc(db, "users", user.uid, "tasks", id),
-      { ...updates, updatedAt: Date.now() },
+      payload,
       { merge: true }
     );
   };
 
-  // 🔹 DELETE
+  // DELETE
   const deleteTask = async (id) => {
-    if (!user || !id) return;
+    if (!user) {
+      setTasks((t) => t.filter((x) => x.id !== id));
+      return;
+    }
+
     await deleteDoc(doc(db, "users", user.uid, "tasks", id));
   };
 
   return (
-    <TaskContext.Provider value={{ tasks, addTask, updateTask, deleteTask }}>
+    <TaskContext.Provider
+      value={{
+        tasks,
+        addTask,
+        updateTask,
+        deleteTask,
+        focusedTaskId,
+        setFocusedTaskId,
+      }}
+    >
       {children}
     </TaskContext.Provider>
   );
 }
 
 export function useTasks() {
-  return useContext(TaskContext);
+  const ctx = useContext(TaskContext);
+  if (!ctx) {
+    throw new Error("useTasks must be used inside TaskProvider");
+  }
+  return ctx;
 }

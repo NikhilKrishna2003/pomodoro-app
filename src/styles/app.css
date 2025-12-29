@@ -1,0 +1,1198 @@
+/* =========================
+   RESET & BASE (CRITICAL)
+========================= */
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  background: #020617;
+  color: #e5e7eb;
+
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  overflow: hidden; /* 🔥 prevents white drag */
+  overscroll-behavior: none;
+
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+/* =========================
+   APP ROOT (ONLY SCROLL AREA)
+========================= */
+.app-root {
+  height: 100vh;
+  width: 100vw;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+
+  padding: 16px;
+
+  transform: translateZ(0);
+}
+
+/* iOS viewport fix */
+@supports (-webkit-touch-callout: none) {
+  .app-root {
+    height: 100dvh;
+  }
+}
+
+/* =========================
+   TOP NAV
+========================= */
+.top-nav {
+  max-width: 900px;
+  margin: 0 auto 24px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.nav-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-tabs button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.6);
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.nav-tabs button.active {
+  background: #22c55e;
+  color: #020617;
+  font-weight: 600;
+}
+
+/* =========================
+   PAGE + CARD
+========================= */
+.page {
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  width: 420px;
+  max-width: 100%;
+
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(18px);
+
+  border-radius: 28px;
+  padding: 36px 32px 40px;
+
+  box-shadow:
+    0 40px 120px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  position: relative;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+button {
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 16px;
+
+  background: #1f2937;
+  color: #e5e7eb;
+
+  font-size: 14px;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.96);
+}
+
+button.primary {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: #020617;
+  font-weight: 600;
+}
+
+button.secondary {
+  background: #334155;
+}
+
+button.danger {
+  background: #7f1d1d;
+  color: #fecaca;
+}
+
+/* =========================
+   FOCUS TAB
+========================= */
+.focus-card {
+  width: 420px;
+  min-height: 420px;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  justify-items: center;
+  align-items: center;
+
+  padding: 32px;
+  border-radius: 28px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.95),
+    rgba(8, 12, 24, 0.95)
+  );
+
+  box-shadow:
+    0 30px 80px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.mode-switch {
+  display: flex;
+  gap: 10px;
+}
+
+.mode-switch button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: rgba(2,6,23,0.6);
+  color: #94a3b8;
+}
+
+.mode-switch button.active {
+  background: #22c55e;
+  color: #020617;
+  font-weight: 600;
+}
+
+.timer {
+  font-size: 96px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* =========================
+   TASKS
+========================= */
+.task-card {
+  background: #1e293b;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 8px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* =========================
+   SETTINGS SIDE PANEL (FINAL)
+========================= */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 9998;
+}
+
+.settings-side-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+
+  height: 100dvh;
+  width: min(92vw, 380px);
+
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.98),
+    rgba(8, 12, 24, 0.98)
+  );
+
+  padding: 24px;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+
+  animation: slideIn 0.25s ease forwards;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-header h2 {
+  margin: 0;
+  font-size: 20px;
+}
+
+/* Profile */
+.profile-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  background: rgba(2,6,23,0.6);
+  padding: 12px;
+  border-radius: 14px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #22c55e;
+  color: #020617;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-name {
+  font-weight: 600;
+}
+
+.profile-email {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+/* Sections */
+.settings-section h4 {
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.settings-section input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: #020617;
+  color: #e5e7eb;
+}
+
+/* Toggle */
+.toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.toggle button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 999px;
+  background: rgba(2,6,23,0.6);
+  color: #94a3b8;
+}
+
+.toggle button.active {
+  background: #22c55e;
+  color: #020617;
+  font-weight: 600;
+}
+
+/* Footer */
+.settings-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+}
+
+.settings-actions button {
+  flex: 1;
+}
+
+/* =========================
+   MOBILE OPTIMIZATION
+========================= */
+@media (max-width: 640px) {
+  .timer {
+    font-size: 72px;
+  }
+
+  .brand {
+    font-size: 18px;
+  }
+
+  .nav-tabs button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .card,
+  .focus-card {
+    width: 100%;
+  }
+}
+/* =========================
+   GLOBAL SOFT GLOW TOKENS
+========================= */
+:root {
+  --glow-green: rgba(34, 197, 94, 0.35);
+  --glow-green-soft: rgba(34, 197, 94, 0.18);
+  --glow-blue-soft: rgba(59, 130, 246, 0.18);
+}
+
+/* =========================
+   CARD GLOW (BEFORE / AFTER)
+========================= */
+.card::after,
+.focus-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    60% 40% at 50% 0%,
+    var(--glow-green-soft),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* =========================
+   FOCUS TIMER GLOW
+========================= */
+.timer {
+  text-shadow:
+    0 0 18px rgba(255, 255, 255, 0.08),
+    0 0 36px rgba(34, 197, 94, 0.12);
+}
+
+/* =========================
+   BUTTON GLOW
+========================= */
+button.primary {
+  box-shadow:
+    0 12px 32px var(--glow-green),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+button.primary:hover {
+  box-shadow:
+    0 18px 48px rgba(34, 197, 94, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+button.secondary:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 8px 24px rgba(255,255,255,0.08);
+}
+
+/* =========================
+   INPUT GLOW (TODO + SETTINGS)
+========================= */
+input {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+input:focus {
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.6),
+    0 0 24px rgba(34, 197, 94, 0.25);
+}
+
+/* =========================
+   TODO INPUT GLOW (STRONGER)
+========================= */
+.task-add input:focus {
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.7),
+    0 0 28px rgba(34, 197, 94, 0.35);
+}
+
+/* =========================
+   TODO CARD GLOW
+========================= */
+.task-card {
+  position: relative;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 12px 30px rgba(0,0,0,0.35),
+    0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Status-based glow */
+.task-card .badge.pending {
+  box-shadow: 0 0 12px rgba(250, 204, 21, 0.6);
+}
+
+.task-card .badge.in_progress {
+  box-shadow: 0 0 12px var(--glow-blue-soft);
+}
+
+.task-card .badge.completed {
+  box-shadow: 0 0 12px var(--glow-green-soft);
+}
+/* =========================
+   LOGIN – TRUE CENTER
+========================= */
+.auth-page {
+  height: 100dvh;
+  width: 100vw;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+/* =========================
+   SETTINGS PANEL GLOW
+========================= */
+.settings-side-panel::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    60% 40% at 50% 0%,
+    rgba(34, 197, 94, 0.15),
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+
+
+.auth-card {
+  transform: translateY(-4%);
+}
+
+/* =====================================================
+   LIGHT THEME — WHITE + BLUE (CLEAN & STABLE)
+===================================================== */
+
+html[data-theme="light"],
+html[data-theme="light"] body,
+html[data-theme="light"] .app-root {
+  background: #f5f7fb;
+  color: #0f172a;
+}
+
+/* -------------------------
+   CARDS (BRIGHT WHITE)
+-------------------------- */
+html[data-theme="light"] .card,
+html[data-theme="light"] .focus-card,
+html[data-theme="light"] .task-card,
+html[data-theme="light"] .settings-side-panel,
+html[data-theme="light"] .profile-card {
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 24px;
+  border: 1px solid #e5e7eb;
+
+  box-shadow:
+    0 10px 28px rgba(15, 23, 42, 0.08);
+}
+
+/* kill ALL decorative overlays */
+html[data-theme="light"] .card::after,
+html[data-theme="light"] .focus-card::after,
+html[data-theme="light"] .settings-side-panel::after {
+  display: none !important;
+}
+
+/* -------------------------
+   TOP NAV / TABS
+-------------------------- */
+html[data-theme="light"] .nav-tabs button {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+html[data-theme="light"] .nav-tabs button.active {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* -------------------------
+   FOCUS / BREAK SWITCH
+-------------------------- */
+html[data-theme="light"] .mode-switch button {
+  background: #e5e7eb;
+  color: #334155;
+  border: 1px solid #d1d5db;
+}
+
+html[data-theme="light"] .mode-switch button.active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+/* -------------------------
+   BUTTONS (BLUE + SOFT GLOW)
+-------------------------- */
+html[data-theme="light"] button {
+  background: #e5e7eb;
+  color: #0f172a;
+  box-shadow: none;
+}
+
+html[data-theme="light"] button.primary,
+html[data-theme="light"] .toggle button.active {
+  background: #2563eb;
+  color: #ffffff;
+
+  box-shadow:
+    0 6px 16px rgba(37, 99, 235, 0.35);
+}
+
+html[data-theme="light"] button.primary:active,
+html[data-theme="light"] .toggle button.active:active {
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.35),
+    0 8px 22px rgba(37, 99, 235, 0.45);
+}
+
+/* -------------------------
+   INPUTS
+-------------------------- */
+html[data-theme="light"] input {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #d1d5db;
+}
+
+html[data-theme="light"] input:focus {
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 2px rgba(37, 99, 235, 0.25);
+}
+
+/* -------------------------
+   TIMER (NO GLOW)
+-------------------------- */
+html[data-theme="light"] .timer {
+  color: #0f172a;
+  text-shadow: none;
+}
+
+/* -------------------------
+   TASK STATUS DOTS
+-------------------------- */
+html[data-theme="light"] .badge.pending,
+html[data-theme="light"] .badge.in_progress,
+html[data-theme="light"] .badge.completed {
+  background: #2563eb;
+}
+
+/* -------------------------
+   AVATAR
+-------------------------- */
+html[data-theme="light"] .avatar {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* =====================================================
+   BLUE BUTTON GLOW — FINAL FIX
+===================================================== */
+
+/* Primary blue buttons */
+html[data-theme="light"] button.primary,
+html[data-theme="light"] .toggle button.active,
+html[data-theme="light"] .nav-tabs button.active,
+html[data-theme="light"] .mode-switch button.active {
+  background: #2563eb;
+  color: #ffffff;
+
+  /* visible glow */
+  box-shadow:
+    0 8px 22px rgba(37, 99, 235, 0.45);
+}
+
+/* Hover glow */
+html[data-theme="light"] button.primary:hover,
+html[data-theme="light"] .toggle button.active:hover,
+html[data-theme="light"] .nav-tabs button.active:hover,
+html[data-theme="light"] .mode-switch button.active:hover {
+  box-shadow:
+    0 10px 28px rgba(37, 99, 235, 0.6);
+}
+
+/* Click / active glow (strongest) */
+html[data-theme="light"] button.primary:active,
+html[data-theme="light"] .toggle button.active:active,
+html[data-theme="light"] .nav-tabs button.active:active,
+html[data-theme="light"] .mode-switch button.active:active {
+  box-shadow:
+    0 0 0 4px rgba(37, 99, 235, 0.35),
+    0 12px 32px rgba(37, 99, 235, 0.75);
+}
+
+/* =====================================================
+   TODO UI – CLEAN, MODERN, READABLE (FINAL)
+===================================================== */
+
+/* ---------- Todo input container ---------- */
+.task-add {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+/* ---------- Todo input ---------- */
+.task-add input {
+  flex: 1;
+  height: 46px;
+  padding: 0 16px;
+
+  font-size: 14px;
+  border-radius: 14px;
+
+  background: #ffffff;
+  color: #0f172a;
+
+  border: 1px solid #d1d5db;
+}
+
+/* Placeholder */
+.task-add input::placeholder {
+  color: #9ca3af;
+}
+
+/* Focus (blue glow) */
+.task-add input:focus {
+  border-color: #2563eb;
+  box-shadow:
+    0 0 0 3px rgba(37, 99, 235, 0.25);
+}
+
+/* ---------- Todo card ---------- */
+.task-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+
+  padding: 14px 16px;
+  margin-bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+/* ---------- Todo main text ---------- */
+.task-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.task-main span {
+  font-size: 14px;
+  color: #0f172a;
+}
+
+/* ---------- Status dot (clean, no emoji) ---------- */
+.badge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.badge.pending {
+  background: #9ca3af;
+}
+
+.badge.in_progress {
+  background: #2563eb;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.6);
+}
+
+.badge.completed {
+  background: #22c55e;
+}
+
+/* ---------- Todo actions (icons look clean now) ---------- */
+.task-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.task-actions button {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 10px;
+  background: transparent;
+
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.task-actions button:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+/* ---------- Light theme consistency ---------- */
+html[data-theme="light"] .task-card {
+  background: #ffffff;
+}
+
+html[data-theme="light"] .task-main span {
+  color: #0f172a;
+}
+/* =========================
+   TASKS – COLUMN LAYOUT
+========================= */
+
+.task-columns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* Mobile */
+@media (max-width: 900px) {
+  .task-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+.task-column {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 14px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Header */
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #334155;
+}
+
+/* Count badge */
+.section-title .count {
+  min-width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Status colors */
+.section-title.pending .count {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+.section-title.in_progress .count {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.section-title.completed .count {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.task-tabs {
+  display: flex;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.task-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: none;
+  background: #eef2f7;
+  color: #475569;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.task-tab .count {
+  background: #cbd5e1;
+  color: #0f172a;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.task-tab.active {
+  background: #2563eb;
+  color: white;
+}
+
+.task-tab.active .count {
+  background: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.task-list {
+  margin-top: 12px;
+}
+
+.empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 24px;
+}
+/* =====================================================
+   TODO TOGGLE — FINAL, THEME-SAFE, FOCUS-MATCHED
+   (DO NOT DUPLICATE ABOVE)
+===================================================== */
+
+/* ---------- Base (Dark Theme) ---------- */
+.task-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+
+  display: flex;
+  gap: 10px;
+
+  margin: 16px 0 20px;
+  padding: 0;
+
+  background: transparent;
+}
+
+.task-tab {
+  flex: 1;
+
+  padding: 8px 16px;
+  border-radius: 999px;
+
+  background: rgba(2, 6, 23, 0.6);
+  color: #94a3b8;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition: all 0.2s ease;
+}
+
+.task-tab.active {
+  background: #22c55e;
+  color: #020617;
+  font-weight: 600;
+
+  box-shadow:
+    0 8px 22px rgba(34, 197, 94, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+.task-tab .count {
+  background: rgba(255,255,255,0.2);
+  color: inherit;
+
+  padding: 2px 8px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ---------- Light Theme Override ---------- */
+html[data-theme="light"] .task-tab {
+  background: #e5e7eb;
+  color: #334155;
+}
+
+html[data-theme="light"] .task-tab.active {
+  background: #2563eb;
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 22px rgba(37, 99, 235, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+html[data-theme="light"] .task-tab .count {
+  background: rgba(0,0,0,0.15);
+}
+
+/* ---------- Task Scroll Stability ---------- */
+.task-content,
+.task-list {
+  height: 460px;
+  overflow-y: auto;
+}
+
+/* =====================================================
+   TODO TABS – FIX OVERFLOW + STATUS COLORS (FINAL)
+===================================================== */
+
+/* Keep tabs fully inside card */
+.card .task-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: flex;
+  gap: 12px;
+
+  margin: 16px 0 20px;
+  padding: 6px;
+
+  border-radius: 18px;
+  background: transparent;
+
+  overflow: hidden; /* 🔥 prevents Completed tab overflow */
+}
+
+/* Bigger, cleaner tabs */
+.card .task-tab {
+  flex: 1;
+
+  padding: 12px 18px;
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  transition: all 0.2s ease;
+}
+
+/* =========================
+   STATUS COLORS (ALL THEMES)
+========================= */
+
+/* Pending — Yellow */
+.card .task-tab.pending {
+  background: rgba(250, 204, 21, 0.18);
+  color: #a16207;
+}
+
+.card .task-tab.pending.active {
+  background: #facc15;
+  color: #422006;
+  box-shadow: 0 10px 28px rgba(250, 204, 21, 0.45);
+}
+
+/* In Progress — Blue */
+.card .task-tab.in_progress {
+  background: rgba(37, 99, 235, 0.18);
+  color: #1e3a8a;
+}
+
+.card .task-tab.in_progress.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.45);
+}
+
+/* Completed — Green */
+.card .task-tab.completed {
+  background: rgba(34, 197, 94, 0.18);
+  color: #14532d;
+}
+
+.card .task-tab.completed.active {
+  background: #22c55e;
+  color: #052e16;
+  box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45);
+}
+
+/* =========================
+   COUNT BADGE (SUBTLE)
+========================= */
+.card .task-tab .count {
+  padding: 2px 8px;
+  border-radius: 999px;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  background: rgba(0,0,0,0.15);
+  color: inherit;
+}
+
+/* =========================
+   LIGHT THEME SAFETY
+========================= */
+html[data-theme="light"] .card .task-tabs {
+  background: transparent;
+}
+
+html[data-theme="light"] .card .task-tab {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    0 6px 18px rgba(15,23,42,0.08);
+}
+/* =====================================================
+   TODO TABS — FINAL FIX (NO CUT, NO OVERFLOW)
+===================================================== */
+
+/* Container */
+.card .task-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+
+  margin: 16px 0 20px;
+  padding: 4px;               /* 🔥 inner breathing space */
+
+  background: transparent;    /* no slab */
+}
+
+/* Tabs */
+.card .task-tab {
+  width: 100%;
+  min-width: 0;               /* 🔥 prevents overflow */
+
+  padding: 12px 14px;         /* slightly reduced horizontally */
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  transition: all 0.2s ease;
+}
+
+/* =========================
+   STATUS COLORS (ALL THEMES)
+========================= */
+
+/* Pending — Yellow */
+.card .task-tab.pending {
+  background: rgba(250, 204, 21, 0.18);
+  color: #854d0e;
+}
+.card .task-tab.pending.active {
+  background: #facc15;
+  color: #422006;
+  box-shadow: 0 10px 28px rgba(250, 204, 21, 0.45);
+}
+
+/* In Progress — Blue */
+.card .task-tab.in_progress {
+  background: rgba(37, 99, 235, 0.18);
+  color: #1e40af;
+}
+.card .task-tab.in_progress.active {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 10px 28px rgba(37, 99, 235, 0.45);
+}
+
+/* Completed — Green */
+.card .task-tab.completed {
+  background: rgba(34, 197, 94, 0.18);
+  color: #166534;
+}
+.card .task-tab.completed.active {
+  background: #22c55e;
+  color: #052e16;
+  box-shadow: 0 10px 28px rgba(34, 197, 94, 0.45);
+}
+
+/* Count badge */
+.card .task-tab .count {
+  padding: 2px 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.15);
+  color: inherit;
+}
+
+/* =========================
+   LIGHT THEME SAFETY
+========================= */
+html[data-theme="light"] .card .task-tab {
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.8),
+    0 6px 18px rgba(15,23,42,0.08);
+}

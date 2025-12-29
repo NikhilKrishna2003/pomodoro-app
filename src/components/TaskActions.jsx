@@ -4,21 +4,54 @@ export default function TaskActions({ task, onEdit }) {
   const { updateTask, deleteTask } = useTasks();
 
   return (
-    <div className="todo-actions">
+    <div className="task-actions">
       {task.status === "pending" && (
-        <button onClick={() => updateTask(task.id, { status: "in_progress" })}>
+        <button
+          className="icon"
+          onClick={() =>
+            updateTask(task.id, { status: "in_progress" })
+          }
+        >
           ▶
         </button>
       )}
 
       {task.status === "in_progress" && (
-        <button onClick={() => updateTask(task.id, { status: "completed" })}>
+        <button
+          className="icon"
+          onClick={() =>
+            updateTask(task.id, { status: "completed" })
+          }
+        >
           ✔
         </button>
       )}
 
-      <button onClick={onEdit}>✏</button>
-      <button onClick={() => deleteTask(task.id)}>🗑</button>
+      {task.status === "completed" && (
+        <button
+          className="icon"
+          onClick={() =>
+            updateTask(task.id, { status: "pending" })
+          }
+        >
+          ↺
+        </button>
+      )}
+
+      <button className="icon" onClick={onEdit}>
+        ✏
+      </button>
+
+      <button
+        className="icon danger"
+        onClick={() => {
+          if (confirm("Delete this task?")) {
+            deleteTask(task.id);
+          }
+        }}
+      >
+        🗑
+      </button>
     </div>
   );
 }

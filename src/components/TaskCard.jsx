@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTasks } from "../context/TaskContext";
 import TaskActions from "./TaskActions";
 
@@ -7,42 +7,33 @@ export default function TaskCard({ task }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(task.title);
 
-  useEffect(() => {
-    setValue(task.title);
-  }, [task.title]);
-
   return (
-    <div className="todo-item">
+    <div className="task-card">
       {!editing ? (
         <>
-          <span className="todo-title-text">{task.title}</span>
+          <div className="task-main">
+            <span className={task.status === "completed" ? "done" : ""}>
+              {task.title}
+            </span>
+            <span className={`badge ${task.status}`} />
+          </div>
           <TaskActions task={task} onEdit={() => setEditing(true)} />
         </>
       ) : (
         <>
           <input
-            autoFocus
             value={value}
             onChange={(e) => setValue(e.target.value)}
-            style={{
-              flex: 1,
-              padding: "6px 8px",
-              background: "var(--btn-secondary-bg)",
-              color: "var(--text-primary)",
-              border: "none",
-              borderRadius: "8px",
-              outline: "none",
-            }}
           />
           <button
+            className="primary"
             onClick={() => {
-              updateTask(task.id, { title: value });
+              updateTask(task.id, { title: value.trim() });
               setEditing(false);
             }}
           >
-            ✔
+            Save
           </button>
-          <button onClick={() => setEditing(false)}>✕</button>
         </>
       )}
     </div>
