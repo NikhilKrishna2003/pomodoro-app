@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTasks } from "../context/TaskContext";
 import Toast from "./Toast";
+import Stats from "./Stats";
 
 const MODES = {
   focus: { label: "Focus", minutes: 25 },
@@ -9,12 +10,16 @@ const MODES = {
 };
 
 export default function FocusTab({ focusMinutes, soundEnabled }) {
+  /* 🔹 CONTEXT FIRST (VERY IMPORTANT) */
+  const { tasks, updateTask, focusedTaskId, setFocusedTaskId } = useTasks();
+
+  /* 🔹 LOCAL STATE */
   const [mode, setMode] = useState("focus");
   const [running, setRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState(focusMinutes * 60);
   const [toast, setToast] = useState("");
-
-  const { tasks, updateTask, focusedTaskId, setFocusedTaskId } = useTasks();
+  const [pomodoros, setPomodoros] = useState(0);
+  const [totalMinutes, setTotalMinutes] = useState(0);
 
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
@@ -24,7 +29,7 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
     audioRef.current = new Audio("/sounds/notify.mp3");
   }, []);
 
-  /* RESET ON MODE CHANGE */
+  /* RESET TIMER ON MODE CHANGE */
   useEffect(() => {
     setTimeLeft(
       mode === "focus"
@@ -34,7 +39,7 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
     setRunning(false);
   }, [mode, focusMinutes]);
 
-  /* START FOCUS → LOCK ACTIVE TASK */
+  /* START / PAUSE */
   const startFocus = () => {
     if (!running && mode === "focus") {
       const active = tasks.find(t => t.status === "in_progress");
@@ -43,7 +48,7 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
     setRunning(r => !r);
   };
 
-  /* TIMER */
+  /* TIMER LOGIC */
   useEffect(() => {
     if (!running) return;
 
@@ -58,21 +63,26 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
             audioRef.current.play().catch(() => {});
           }
 
-          // ✅ COMPLETE TASK AFTER FOCUS
-          if (mode === "focus" && focusedTaskId) {
-            updateTask(focusedTaskId, { status: "completed" });
-            setFocusedTaskId(null);
+          if (mode === "focus") {
+            setPomodoros(p => p + 1);
+            setTotalMinutes(m => m + focusMinutes);
+
+            if (focusedTaskId) {
+              updateTask(focusedTaskId, { status: "completed" });
+              setFocusedTaskId(null);
+            }
           }
 
           setToast("Focus session completed");
           return 0;
         }
+
         return t - 1;
       });
     }, 1000);
 
     return () => clearInterval(intervalRef.current);
-  }, [running, soundEnabled, focusedTaskId, mode]);
+  }, [running, mode, soundEnabled, focusedTaskId, focusMinutes]);
 
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
@@ -94,8 +104,10 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
           ))}
         </div>
 
+        <Stats pomodoros={pomodoros} totalMinutes={totalMinutes} />
+
         {focusedTask && (
-          <div className="center" style={{ marginTop: 12, opacity: 0.8 }}>
+          <div style={{ opacity: 0.8 }}>
             Focusing on: <b>{focusedTask.title}</b>
           </div>
         )}
@@ -104,7 +116,7 @@ export default function FocusTab({ focusMinutes, soundEnabled }) {
           {minutes}:{seconds.toString().padStart(2, "0")}
         </div>
 
-        <div className="actions">
+        <div className="focus-actions">
           <button className="primary" onClick={startFocus}>
             {running ? "Pause" : "Start"}
           </button>

@@ -1,14 +1,16 @@
-export default function Stats({ pomodoros, focusMinutes }) {
+export default function Stats({ pomodoros, totalMinutes }) {
   return (
     <div className="stats">
-      <div className="stat-box">
-        <div className="stat-value">{pomodoros}</div>
-        <div className="stat-label">Pomodoros</div>
+      {/* Pomodoros */}
+      <div className="stat">
+        <strong>{pomodoros}</strong>
+        <span>Pomodoros</span>
       </div>
 
-      <div className="stat-box">
-        <div className="stat-value">{focusMinutes}</div>
-        <div className="stat-label">Minutes Focused</div>
+      {/* Total Minutes (emphasis) */}
+      <div className="stat total">
+        <strong>{totalMinutes}</strong>
+        <span>Total Minutes</span>
       </div>
     </div>
   );
