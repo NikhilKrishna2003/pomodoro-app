@@ -1,103 +1,112 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
   collection,
-  doc,
+  query,
+  where,
   onSnapshot,
   addDoc,
-  setDoc,
+  updateDoc,
+  doc,
   deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "../firebase";
 
 const TaskContext = createContext();
-const LOCAL_KEY = "nikhub_tasks";
 
 export function TaskProvider({ user, children }) {
   const [tasks, setTasks] = useState([]);
   const [focusedTaskId, setFocusedTaskId] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // LOAD TASKS
+  /* =========================
+     FIRESTORE LISTENER (SAFE)
+  ========================= */
   useEffect(() => {
-    if (!user) {
-      const local = localStorage.getItem(LOCAL_KEY);
-      setTasks(local ? JSON.parse(local) : []);
+    // 🔒 HARD GUARD — DO NOT REMOVE
+    if (!user?.uid) {
+      setTasks([]);
+      setFocusedTaskId(null);
+      setLoading(false);
       return;
     }
 
-    const ref = collection(db, "users", user.uid, "tasks");
-    const unsub = onSnapshot(ref, (snap) => {
-      setTasks(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
-    });
-
-    return unsub;
-  }, [user]);
-
-  // SAVE LOCAL (guest)
-  useEffect(() => {
-    if (!user) {
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(tasks));
-    }
-  }, [tasks, user]);
-
-  // ADD
-  const addTask = async (title) => {
-    const clean = title.trim();
-    if (!clean) return;
-
-    const payload = {
-      title: clean,
-      status: "pending",
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
-
-    if (!user) {
-      setTasks((t) => [{ id: crypto.randomUUID(), ...payload }, ...t]);
-      return;
-    }
-
-    await addDoc(collection(db, "users", user.uid, "tasks"), payload);
-  };
-
-  // UPDATE
-  const updateTask = async (id, updates) => {
-    const payload = { ...updates, updatedAt: Date.now() };
-
-    if (!user) {
-      setTasks((t) =>
-        t.map((x) => (x.id === id ? { ...x, ...payload } : x))
-      );
-      return;
-    }
-
-    await setDoc(
-      doc(db, "users", user.uid, "tasks", id),
-      payload,
-      { merge: true }
+    const q = query(
+      collection(db, "tasks"),
+      where("userId", "==", user.uid)
     );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const list = snapshot.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+        }));
+
+        setTasks(list);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Firestore tasks listener error:", error);
+        setLoading(false);
+      }
+    );
+
+    return unsubscribe;
+  }, [user?.uid]);
+
+  /* =========================
+     ACTIONS (ALL GUARDED)
+  ========================= */
+
+  const addTask = async (title) => {
+    if (!user?.uid || !title?.trim()) return;
+
+    await addDoc(collection(db, "tasks"), {
+      title: title.trim(),
+      status: "pending",
+      userId: user.uid,
+      createdAt: serverTimestamp(),
+    });
   };
 
-  // DELETE
-  const deleteTask = async (id) => {
-    if (!user) {
-      setTasks((t) => t.filter((x) => x.id !== id));
-      return;
-    }
+  const updateTask = async (taskId, updates) => {
+    // 🔒 ABSOLUTE SAFETY CHECK
+    if (typeof taskId !== "string" || !updates) return;
 
-    await deleteDoc(doc(db, "users", user.uid, "tasks", id));
+    try {
+      await updateDoc(doc(db, "tasks", taskId), updates);
+    } catch (err) {
+      console.error("updateTask failed:", err);
+    }
+  };
+
+  const deleteTask = async (taskId) => {
+    if (typeof taskId !== "string") return;
+
+    try {
+      await deleteDoc(doc(db, "tasks", taskId));
+    } catch (err) {
+      console.error("deleteTask failed:", err);
+    }
+  };
+
+  /* =========================
+     CONTEXT VALUE
+  ========================= */
+  const value = {
+    tasks,
+    loading,
+    addTask,
+    updateTask,
+    deleteTask,
+    focusedTaskId,
+    setFocusedTaskId,
   };
 
   return (
-    <TaskContext.Provider
-      value={{
-        tasks,
-        addTask,
-        updateTask,
-        deleteTask,
-        focusedTaskId,
-        setFocusedTaskId,
-      }}
-    >
+    <TaskContext.Provider value={value}>
       {children}
     </TaskContext.Provider>
   );

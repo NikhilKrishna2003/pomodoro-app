@@ -7,6 +7,7 @@ import { TaskProvider } from "./context/TaskContext";
 import FocusTab from "./components/FocusTab";
 import TasksTab from "./components/TasksTab";
 import SettingsTab from "./components/SettingsTab";
+import TodayDashboard from "./components/TodayDashboard";
 import Login from "./pages/Login";
 
 const SETTINGS_KEY = "nikhub_settings";
@@ -22,7 +23,9 @@ export default function App() {
   const [theme, setTheme] = useState("dark");
   const [soundEnabled, setSoundEnabled] = useState(true);
 
-  // AUTH
+  /* =========================
+     AUTH
+  ========================= */
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
@@ -31,7 +34,9 @@ export default function App() {
     return unsub;
   }, []);
 
-  // LOAD SETTINGS
+  /* =========================
+     LOAD SETTINGS
+  ========================= */
   useEffect(() => {
     const saved = localStorage.getItem(SETTINGS_KEY);
     if (saved) {
@@ -42,7 +47,9 @@ export default function App() {
     }
   }, []);
 
-  // SAVE SETTINGS
+  /* =========================
+     SAVE SETTINGS
+  ========================= */
   useEffect(() => {
     localStorage.setItem(
       SETTINGS_KEY,
@@ -50,7 +57,9 @@ export default function App() {
     );
   }, [focusMinutes, theme, soundEnabled]);
 
-  // APPLY THEME
+  /* =========================
+     APPLY THEME
+  ========================= */
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
@@ -96,6 +105,7 @@ export default function App() {
             soundEnabled={soundEnabled}
           />
         )}
+
 
         {activeTab === "tasks" && <TasksTab />}
       </div>

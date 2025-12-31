@@ -1689,3 +1689,98 @@ html[data-theme="light"] .stat.total strong {
 html[data-theme="light"] .stat span {
   color: #475569;
 }
+
+/* =========================
+   Focus + Today Layout
+========================= */
+.focus-layout {
+  display: grid;
+  grid-template-columns: 520px 280px;
+  gap: 28px;
+
+  max-width: 900px;
+  margin: 0 auto;
+
+  /* 🔥 THIS IS THE KEY */
+  justify-content: start;
+  align-items: start;
+
+  padding-top: 32px;
+}
+
+.focus-layout {
+  transform: translateX(-40px);
+}
+
+
+
+
+/* =========================
+   Today Dashboard Widget
+========================= */
+.today-widget {
+  padding: 14px;
+  max-width: 300px;
+  margin-top: 8px;
+  backdrop-filter: blur(12px);
+  opacity: 0.95;
+}
+
+.focus-running .today-widget {
+  opacity: 0.6;
+}
+
+.today-widget {
+  justify-self: start;
+  margin-top: 8px;
+}
+
+
+/* =========================
+   Mobile Layout
+========================= */
+@media (max-width: 768px) {
+  .focus-layout {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    gap: 16px;
+    padding-top: 16px;
+    transform: none;
+  }
+}
+
+/* Inline Today inside Focus */
+.today-inline {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  text-align: center;
+}
+
+.today-title {
+  font-size: 0.85rem;
+  opacity: 0.7;
+  margin-bottom: 8px;
+}
+
+.today-inline-stats {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.today-inline-stats div {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.today-inline-stats strong {
+  font-size: 1.1rem;
+}
+
+.today-inline-stats span {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
